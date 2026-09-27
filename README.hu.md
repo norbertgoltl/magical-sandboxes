@@ -107,6 +107,12 @@ Az aktuális projektkönyvtárhoz tartozó VM és guest adatok végleges törlé
 
 A parancs megmutatja a teljes projektútvonalat, és interaktív megerősítést kér. Törli az ehhez a projekthez tartozó guest lemezt, HOME-ot, natív harness-belépéseket és más guest fájlokat. A célprojekt könyvtárában levő fájlokat nem törli. A törlés előtt minden munkamenetnek ki kell lépnie; az utolsó után a VM három másodpercen belül leáll.
 
+## Projekt VM mentése és visszaállítása
+
+Az `msbx backup` parancsot leállított projekt VM mellett futtasd. PAX TAR archívumot készít, Zstandard tömörítéssel és age titkosítással. A csomag tartalmazza a VM-lemezt, a guest HOME-ot, a harness-belépéseket és beállításokat, az EFI-állapotot, valamint egy ellenőrzőösszegeket és kompatibilitási adatokat tartalmazó manifestet. Alapértelmezés szerint a `.msbxbackup.tar.zst.age` mentés az aktuális projektkönyvtár `.msbx/backups/<project-id>/` mappájába kerül; argumentummal másik kimeneti útvonal adható meg. A parancs titkosítási jelszót kér. Őrizd meg biztonságosan, mert nem állítható vissza.
+
+Visszaállításhoz az eredeti, kanonikus projektkönyvtárból futtasd az `msbx delete` parancsot, ha ott még létezik VM, majd add meg a mentést: `msbx restore /path/to/backup.msbxbackup.tar.zst.age`. A restore visszafejti és ellenőrzi a teljes archívumot, megerősítést kér, majd létrehozza a VM-et. Csak ugyanahhoz a projektútvonalhoz és kompatibilis VM-háttérhez készült mentést fogad el. A csomagformátum platformfüggetlen, de a jelenlegi VM-tartalom Apple Virtualization és ARM64 specifikus. A hostról megosztott projektfájlokat nem tartalmazza a VM-mentés. Részletek a [mentési formátumról szóló döntésben](docs/decisions/0001-portable-backup-format.md).
+
 ## Kódmódosítások újraépítése
 
 ### Swift formázás ellenőrzése
@@ -172,7 +178,7 @@ Dokumentációs változtatás után nincs szükség újrafordításra vagy újra
 
 ## Hitelesítési adatok és állapot
 
-Minden projekt VM-je a saját guest HOME-jában tárolja a harness-belépéseket és beállításokat. Ezek a VM leállása után is megmaradnak, más projektektől elkülönülnek, és az `msbx delete` törli őket. Az msbx nem készít biztonsági mentést a guest VM-lemezekről.
+Minden projekt VM-je a saját guest HOME-jában tárolja a harness-belépéseket és beállításokat. Ezek a VM leállása után is megmaradnak, más projektektől elkülönülnek, és az `msbx delete` törli őket. Titkosított VM-mentéshez használd az `msbx backup`, visszaállításhoz az `msbx restore` parancsot.
 
 - Debian alapimage és cache: `.msbx-dev/guest/debian-13-generic-arm64-<DEBIAN_IMAGE_VERSION>/`
 - Tiszta guest sablon: `.msbx-dev/sandboxes/template/`
@@ -188,6 +194,7 @@ Minden projekt VM-je a saját guest HOME-jában tárolja a harness-belépéseket
 ```
 
 - [Rendszeráttekintés és VM működés](docs/magical-sandboxes.hu.md)
+- [Fejlesztői útmutató és platformfüggetlenségi irány](docs/development.hu.md)
 - [Codex indítás és hibakeresés](docs/codex.hu.md)
 - [Claude Code indítás és hibakeresés](docs/claude.hu.md)
 - [OpenCode indítás és hibakeresés](docs/opencode.hu.md)

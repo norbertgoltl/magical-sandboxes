@@ -108,6 +108,12 @@ To permanently delete the VM and guest data associated with the current project 
 
 The command displays the full project path and requires interactive confirmation. It deletes the guest disk, guest HOME, sandbox-local sign-ins, and other guest files for this project. It leaves files in the target project directory untouched. Make sure all sessions have exited; the VM shuts down after a three-second idle grace period.
 
+## Back up and restore a project VM
+
+Run `msbx backup` while the project VM is stopped. It creates a PAX TAR archive compressed with Zstandard and encrypted with age. The archive contains the VM disk, guest HOME, harness sign-ins, settings, EFI state, and a checksummed compatibility manifest. By default, it stores the `.msbxbackup.tar.zst.age` file under `.msbx/backups/<project-id>/` in the current project directory; an optional argument chooses another output path. The command prompts for an encryption passphrase. Keep it safe because it cannot be recovered.
+
+To restore, run `msbx delete` from the same canonical project directory if its VM currently exists, then run `msbx restore /path/to/backup.msbxbackup.tar.zst.age`. Restore decrypts and validates the complete archive, asks for confirmation, then creates a new VM. It accepts backups only for the same project path and compatible VM backend. Project files shared from the host are not included in the VM backup. The archive format is platform-independent; the VM payload is currently specific to Apple Virtualization and ARM64. See [the backup format decision](docs/decisions/0001-portable-backup-format.md).
+
 ## Rebuild after code changes
 
 ### Check Swift formatting
@@ -173,7 +179,7 @@ Documentation changes do not require a rebuild or reprovisioning.
 
 ## Credentials and state
 
-Each project VM stores the harness sign-ins and settings in its guest HOME. These remain available after VM shutdown, are isolated from other projects, and are deleted by `msbx delete`. Guest VM disks are not backed up by msbx.
+Each project VM stores the harness sign-ins and settings in its guest HOME. These remain available after VM shutdown, are isolated from other projects, and are deleted by `msbx delete`. Use `msbx backup` to create an encrypted VM backup and `msbx restore` to restore it for the same project path.
 
 - Debian base image and cache: `.msbx-dev/guest/debian-13-generic-arm64-<DEBIAN_IMAGE_VERSION>/`
 - Clean guest template: `.msbx-dev/sandboxes/template/`
@@ -189,6 +195,7 @@ Each project VM stores the harness sign-ins and settings in its guest HOME. Thes
 ```
 
 - [System overview and VM behavior](docs/magical-sandboxes.md)
+- [Development guide and platform portability direction](docs/development.md)
 - [Codex startup and troubleshooting](docs/codex.md)
 - [Claude Code startup and troubleshooting](docs/claude.md)
 - [OpenCode startup and troubleshooting](docs/opencode.md)
