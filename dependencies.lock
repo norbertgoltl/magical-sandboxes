@@ -1,0 +1,10 @@
+# Pinned operating-system inputs used by guest provisioning.
+# Harness CLIs intentionally install the latest upstream release and may update
+# themselves according to their own release and update policies.
+DEBIAN_IMAGE_VERSION="20260914-2601"
+DEBIAN_APT_SNAPSHOT="20260914T000000Z"
+DOCKER_CE_PACKAGE_VERSION="5:29.8.0-1~debian.13~trixie"
+DOCKER_CE_CLI_PACKAGE_VERSION="5:29.8.0-1~debian.13~trixie"
+CONTAINERD_PACKAGE_VERSION="2.3.5-1~debian.13~trixie"
+DOCKER_BUILDX_PACKAGE_VERSION="0.37.1-1~debian.13~trixie"
+DOCKER_COMPOSE_PACKAGE_VERSION="5.5.1-1~debian.13~trixie"

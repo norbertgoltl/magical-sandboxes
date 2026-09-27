@@ -1,0 +1,25 @@
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Generated application binaries
+/bin/
+
+# Swift Package Manager build output
+/platform/darwin/vm/swift/.build/
+/platform/darwin/vm/swift/.swiftpm/
+
+# Local VM images, credentials, downloaded tools, and provisioning state
+/.msbx-dev/
+/.env
+/msbx-harness-state.tar.gz.enc
+/msbx-harness-state.manifest
+
+# Runtime state created inside a target project
+/.msbx/harnesses/
+/.msbx/activity/
+
+# Local agent instructions
+/AGENTS.md
