@@ -49,6 +49,10 @@ func main() {
 		os.Exit(runInitCommand(os.Args[2:]))
 	case "delete":
 		os.Exit(runDeleteCommand(os.Args[2:]))
+	case "backup":
+		os.Exit(runBackupCommand(os.Args[2:]))
+	case "restore":
+		os.Exit(runRestoreCommand(os.Args[2:]))
 	case "version", "--version", "-v":
 		fmt.Printf("msbx %s\n", version)
 	case "help", "--help", "-h":
@@ -177,6 +181,8 @@ Usage:
   msbx status                     Show this project's VM status
   msbx init                       Create or verify this project's isolated VM
   msbx delete                     Delete this project's isolated VM and guest data
+  msbx backup [output-file]       Create an encrypted backup of this project's VM
+  msbx restore <backup-file>      Restore this project's VM from an encrypted backup
   msbx shell                      Open a sandbox shell
   msbx run codex [args...]        Run Codex in this project's shared VM
   msbx run claude [args...]       Run Claude Code in this project's shared VM

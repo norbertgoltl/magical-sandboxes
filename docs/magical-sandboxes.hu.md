@@ -50,6 +50,8 @@ msbx doctor
 msbx version
 msbx init
 msbx status
+msbx backup [output-file]
+msbx restore <backup-file>
 msbx delete
 msbx shell
 msbx run codex [harness args...]
@@ -67,9 +69,11 @@ cd ~/Work/my-project
 
 Az `init` szükség esetén létrehozza a projekt VM-et. Az első `run` vagy `shell` elindítja a projekt VM-menedzsert; a további munkamenetek ehhez a futó VM-hez csatlakoznak. A `run` elindítja a kiválasztott harness-t, és átadja neki a további argumentumokat. A `shell` interaktív, login Bash-t indít. A `delete` interaktív megerősítés után eltávolítja az aktuális projekthez tartozó guest lemezt és állapotot; futó VM esetén megtagadja a törlést. A harness-ek natív guest belépést és beállításokat használnak, projektenként elkülönítve.
 
+Az `msbx backup` csak leállított projekt VM mellett futtatható. PAX TAR archívumot készít Zstandard tömörítéssel és age titkosítással. A csomag tartalmazza a guest lemezt, az EFI-állapotot, a guest HOME-ot, a harness-belépéseket és beállításokat, valamint egy ellenőrzőösszegeket és kompatibilitási adatokat tartalmazó manifestet. Alapértelmezés szerint az aktuális projektkönyvtár `.msbx/backups/<project-id>/` mappájába mentett `.msbxbackup.tar.zst.age` fájlt hoz létre; argumentummal másik útvonal adható meg. A parancs titkosítási jelszót kér, amely elvesztés esetén nem állítható vissza. Az `msbx restore <backup-file>` visszafejti és ellenőrzi a teljes archívumot, megerősítést kér, majd újralétrehozza a VM-et ugyanahhoz a kanonikus projektútvonalhoz és kompatibilis VM-háttérhez. Ha sandbox már létezik, előbb töröld. A csomagformátum platformfüggetlen, de a jelenlegi VM-tartalom Apple Virtualization és ARM64 specifikus. A mentés nem tartalmazza a guestben megosztott host projektfájlokat. Részletek a [mentési formátumról szóló döntésben](decisions/0001-portable-backup-format.md).
+
 ## VM és guest életciklus
 
-Az `msbx run`, `msbx shell`, `msbx init`, `msbx status` és `msbx delete` a futó `msbx` bináris helyéből állapítja meg a telepítési gyökeret. Az aktuális munkakönyvtárat kanonikus útvonalra oldja fel, és elutasítja, ha az átfed az msbx telepítési fájával. Így a guest számára írható megosztás nem tárhatja fel és nem módosíthatja az msbx telepítését. Az `msbx init` a kanonikus projektútvonal SHA-256 hash-ét használja azonosítóként, és az adott VM fájljait a `.msbx-dev/sandboxes/projects/<project-id>/` alatt hozza létre a `.msbx-dev/sandboxes/template/` tiszta sablon másolásával. A metadata eltárolja a teljes projektútvonalat, hogy a hash-elt VM könyvtár azonosítható legyen. Az `msbx delete` a teljes útvonal megmutatása és interaktív megerősítés után törli az aktuális projekthez tartozó inicializált VM-et; zárolt guest lemez esetén megtagadja a törlést.
+Az `msbx run`, `msbx shell`, `msbx init`, `msbx status`, `msbx backup`, `msbx restore` és `msbx delete` a futó `msbx` bináris helyéből állapítja meg a telepítési gyökeret. Az aktuális munkakönyvtárat kanonikus útvonalra oldja fel, és elutasítja, ha az átfed az msbx telepítési fájával. Így a guest számára írható megosztás nem tárhatja fel és nem módosíthatja az msbx telepítését. Az `msbx init` a kanonikus projektútvonal SHA-256 hash-ét használja azonosítóként, és az adott VM fájljait a `.msbx-dev/sandboxes/projects/<project-id>/` alatt hozza létre a `.msbx-dev/sandboxes/template/` tiszta sablon másolásával. A metadata eltárolja a teljes projektútvonalat, hogy a hash-elt VM könyvtár azonosítható legyen. Az `msbx delete` a teljes útvonal megmutatása és interaktív megerősítés után törli az aktuális projekthez tartozó inicializált VM-et; zárolt guest lemez esetén megtagadja a törlést.
 
 A VM-menedzser a guest lemez kizárólagos, nem blokkoló zárolását a VM teljes élettartama alatt tartja. A külön projektek külön lemezt használnak és párhuzamosan futhatnak; egy projekten belüli munkamenetek ugyanahhoz a VM-menedzserhez és vendéghez csatlakoznak. A lock fájl a sandbox könyvtárban maradhat, de a tényleges zárolást az operációs rendszer tartja fenn, így egy váratlan helper-kilépés nem hagy beragadt lockot. Az inicializálás a lemez és az EFI-állapot másolása közben projektenkénti életciklus-zárolást is tart.
 
