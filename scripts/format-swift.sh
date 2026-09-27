@@ -9,7 +9,6 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 docker run --rm \
-  --platform linux/arm64 \
   --volume "${repo_root}:/workspace" \
   --workdir /workspace \
   swift:6.2 \
