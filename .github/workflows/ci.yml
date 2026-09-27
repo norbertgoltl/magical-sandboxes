@@ -27,3 +27,17 @@ jobs:
 
       - name: Run go vet
         run: go vet ./...
+
+  swift:
+    name: Swift tests
+    runs-on: macos-15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Run Swift tests
+        run: swift test --package-path platform/darwin/vm/swift
