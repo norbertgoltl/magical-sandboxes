@@ -78,6 +78,15 @@ Harness-specific arguments can follow `run`:
 
 Run `msbx status` from this project directory to see whether its VM is running, starting, or stopped. It also reports sandbox initialization, guest disk and EFI state sizes, template readiness, and the manager log's last update time. Status checks the VM's guest-disk lock without starting the VM.
 
+### Configure VM size for a project
+
+The default size is Small: 2 vCPUs and 4096 MiB of memory. To override it, create a `.env` file in the target project directory and set `MSBX_VM_CPUS` and/or `MSBX_VM_MEMORY_MIB`. The repository's `.env.example` lists Micro, Small, Medium, and Large pairs as commented examples. The file uses plain `KEY=VALUE` lines; values are not executed as shell code. Explicit environment variables take precedence over `.env`. Changes apply the next time the project VM starts; they do not resize a running VM.
+
+```dotenv
+MSBX_VM_CPUS=2
+MSBX_VM_MEMORY_MIB=4096
+```
+
 The user in the guest shell is `msbx`. This user has no sudo access but belongs to the `docker` group:
 
 ```sh

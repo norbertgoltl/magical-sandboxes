@@ -77,6 +77,15 @@ A `run` után megadhatók az adott harness saját argumentumai is:
 
 Az `msbx status` megmutatja, hogy az adott projekt VM-je fut, indul vagy leállt-e. Kiírja a sandbox inicializáltságát, a guest lemez és EFI-állapot méretét, a sablon készültségét és a menedzsernapló utolsó módosítását is. A státuszlekérdezés nem indítja el a VM-et; a guest lemez zárolását ellenőrzi.
 
+### VM-méret beállítása projektenként
+
+Az alapméret a Small: 2 vCPU és 4096 MiB memória. Felülíráshoz hozz létre `.env` fájlt a célprojekt könyvtárában, és állítsd be benne a `MSBX_VM_CPUS` és/vagy `MSBX_VM_MEMORY_MIB` változót. A repository `.env.example` fájlja kommentelt példaként felsorolja a Micro, Small, Medium és Large méreteket. Egyszerű `KEY=VALUE` sorokat használ; a fájl tartalmát a program nem hajtja végre shellkódként. A folyamat környezeti változói elsőbbséget élveznek a `.env` értékeivel szemben. A módosítás a projekt VM következő indulásakor érvényesül; a már futó VM méretét nem változtatja meg.
+
+```dotenv
+MSBX_VM_CPUS=2
+MSBX_VM_MEMORY_MIB=4096
+```
+
 A guest shellben a felhasználó `msbx`, amelynek nincs sudo hozzáférése, de tagja a `docker` csoportnak:
 
 ```sh

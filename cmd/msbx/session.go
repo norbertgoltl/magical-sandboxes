@@ -21,7 +21,7 @@ import (
 
 const projectSessionProtocol = "MSBX/8"
 
-func runProjectSession(root, vm string, sandbox projectSandboxPaths, projectPath, term, guestCommand string, guestArgs []string) int {
+func runProjectSession(root, vm string, sandbox projectSandboxPaths, projectPath, term, guestCommand string, guestArgs []string, resources vmResources) int {
 	rows, cols := terminalSize()
 	arguments := strings.Join(guestArgs, "\x1f")
 	header := []string{
@@ -36,7 +36,7 @@ func runProjectSession(root, vm string, sandbox projectSandboxPaths, projectPath
 	var connection *net.UnixConn
 	startupDeadline := time.Now().Add(90 * time.Second)
 	for {
-		candidate, err := ensureProjectVM(root, vm, sandbox, projectPath)
+		candidate, err := ensureProjectVM(root, vm, sandbox, projectPath, resources)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "msbx: %v\n", err)
 			return 1
@@ -121,7 +121,7 @@ func runProjectSession(root, vm string, sandbox projectSandboxPaths, projectPath
 	}
 }
 
-func ensureProjectVM(root, vm string, sandbox projectSandboxPaths, projectPath string) (*net.UnixConn, error) {
+func ensureProjectVM(root, vm string, sandbox projectSandboxPaths, projectPath string, resources vmResources) (*net.UnixConn, error) {
 	identity := sha256.Sum256([]byte(root + "\x00" + sandbox.ID))
 	socketPath := filepath.Join("/tmp", fmt.Sprintf("msbx-%d-%x.sock", os.Getuid(), identity[:12]))
 	dial := func() (*net.UnixConn, error) {
@@ -160,8 +160,8 @@ func ensureProjectVM(root, vm string, sandbox projectSandboxPaths, projectPath s
 			"--efi-store", sandbox.EFI,
 			"--share", projectPath,
 			"--socket", socketPath,
-			"--cpus", "4",
-			"--memory-mib", "4096",
+			"--cpus", strconv.Itoa(resources.cpus),
+			"--memory-mib", strconv.Itoa(resources.memoryMiB),
 		)
 		command.Stdin = nil
 		command.Stdout = logFile

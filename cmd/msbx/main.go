@@ -119,6 +119,11 @@ func runGuest(guestCommand string, guestArgs []string) int {
 			return 1
 		}
 	}
+	resources, err := loadVMResources(cwd)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "msbx: %v\n", err)
+		return 1
+	}
 
 	term := os.Getenv("TERM")
 	if term == "" {
@@ -138,7 +143,7 @@ func runGuest(guestCommand string, guestArgs []string) int {
 	}
 	defer restore()
 
-	return runProjectSession(root, vm, sandbox, cwd, term, guestCommand, guestArgs)
+	return runProjectSession(root, vm, sandbox, cwd, term, guestCommand, guestArgs, resources)
 }
 
 func makeTerminalRaw() (func(), error) {
