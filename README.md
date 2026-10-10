@@ -199,3 +199,7 @@ Each project VM stores the harness sign-ins and settings in its guest HOME. Thes
 - [Codex startup and troubleshooting](docs/codex.md)
 - [Claude Code startup and troubleshooting](docs/claude.md)
 - [OpenCode startup and troubleshooting](docs/opencode.md)
+
+## License
+
+[MIT](LICENSE)
