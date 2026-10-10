@@ -198,3 +198,7 @@ Minden projekt VM-je a saját guest HOME-jában tárolja a harness-belépéseket
 - [Codex indítás és hibakeresés](docs/codex.hu.md)
 - [Claude Code indítás és hibakeresés](docs/claude.hu.md)
 - [OpenCode indítás és hibakeresés](docs/opencode.hu.md)
+
+## Licenc
+
+[MIT](LICENSE)
